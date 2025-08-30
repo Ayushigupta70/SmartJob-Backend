@@ -109,12 +109,16 @@ const recruiterGetProfile = async (req, res) => {
 
 // Recruiter – Update Profile
 const recruiterUpdateProfile = async (req, res) => {
+  
   try {
-    const { fullName, phoneNumber, location } = req.body;
+    const { fullName, phoneNumber, location, companyName, role } = req.body;
+
+    const updateFields = { fullName, phoneNumber, location, companyName, role };
+    if (req.file) updateFields.photo = req.file.path; // if uploading image
 
     const updatedUser = await User.findByIdAndUpdate(
       req.user.id,
-      { fullName, phoneNumber, location },
+      updateFields,
       { new: true }
     ).select("-password");
 

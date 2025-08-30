@@ -43,6 +43,19 @@ const newjobSchema = mongoose.Schema({
     location:{
         type:String,
         require:true,
+    },
+    postingDate:{
+        type:Date,
+        require:true,
+    },
+    applicationDeadline:{
+        type:Date,
+        require:true,
+    },
+    status:{
+        type:String,
+        enum:['Active', 'Expired'],
+        default:"Active",
     }
 },{timestamps:true})
 newjobSchema.pre('validate', function (next) {

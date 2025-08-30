@@ -21,10 +21,11 @@ router.get("/admin/users", adminGetAllUsers);
 router.delete("/admin/user/:id",adminDeleteUser);
 
 // Recruiter
-router.get("/recruiter/profile", authMiddleware, recruiterGetProfile);
-router.put("/recruiter/profile", authMiddleware, recruiterUpdateProfile);
+router.get("/recruiter/profile", authMiddleware(), recruiterGetProfile);
+router.put("/recruiter/profile/", authMiddleware(), recruiterUpdateProfile);
 
 // Upload Profile Photo
-router.put("/upload-photo", authMiddleware, upload.single("photo"), uploadPhoto);
+router.put("/upload-photo", authMiddleware(), upload.single("photo"), uploadPhoto);
+
 
 module.exports = router;
