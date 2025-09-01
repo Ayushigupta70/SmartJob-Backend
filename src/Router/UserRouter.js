@@ -22,10 +22,20 @@ router.delete("/admin/user/:id",adminDeleteUser);
 
 // Recruiter
 router.get("/recruiter/profile", authMiddleware(), recruiterGetProfile);
-router.put("/recruiter/profile/", authMiddleware(), recruiterUpdateProfile);
+// router.put("/recruiter/profile", authMiddleware(), recruiterUpdateProfile);
+router.put(
+  "/recruiter/profile",
+  authMiddleware(),        // make sure you call it if it’s a function
+  upload.single("photo"),  // multer handles file
+  recruiterUpdateProfile
+);
+// router.put(
+//   "/recruiter/profile",
+//   authMiddleware,          // for JWT check
+//   upload.single("photo"),  // multer middleware
+//   recruiterUpdateProfile
+// );
 
-// Upload Profile Photo
-router.put("/upload-photo", authMiddleware(), upload.single("photo"), uploadPhoto);
 
 
 module.exports = router;

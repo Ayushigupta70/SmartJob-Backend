@@ -69,8 +69,6 @@ const loginUser = async (req, res) => {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
-
-
 // Admin – Get All Users
 const adminGetAllUsers = async (req, res) => {
   try {
@@ -95,8 +93,6 @@ const adminDeleteUser = async (req, res) => {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
-
-
 // Recruiter – Get Profile
 const recruiterGetProfile = async (req, res) => {
   try {
@@ -105,21 +101,26 @@ const recruiterGetProfile = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
-};
-
+}
 // Recruiter – Update Profile
 const recruiterUpdateProfile = async (req, res) => {
-  
   try {
     const { fullName, phoneNumber, location, companyName, role } = req.body;
 
     const updateFields = { fullName, phoneNumber, location, companyName, role };
-    if (req.file) updateFields.photo = req.file.path; // if uploading image
+
+    
+    if (req.file) {
+  console.log("Uploaded File:", req.file); // should show file info
+  updateFields.photo = req.file.path;
+} else {
+  console.log("No file uploaded");
+}
 
     const updatedUser = await User.findByIdAndUpdate(
-      req.user.id,
-      updateFields,
-      { new: true }
+      req.user.id,       
+      updateFields,      
+      { new: true }      
     ).select("-password");
 
     res.status(200).json(updatedUser);
@@ -128,25 +129,23 @@ const recruiterUpdateProfile = async (req, res) => {
   }
 };
 
+// const uploadPhoto = async (req, res) => {
+//   try {
+//     if (!req.file) {
+//       return res.status(400).json({ message: "No file uploaded" });
+//     }
 
-const uploadPhoto = async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ message: "No file uploaded" });
-    }
+//     const updatedUser = await User.findByIdAndUpdate(
+//       req.user.id,   
+//       { photo: req.file.path },
+//       { new: true }
+//     ).select("-password");
 
-    const updatedUser = await User.findByIdAndUpdate(
-      req.user.id,   
-      { photo: req.file.path },
-      { new: true }
-    ).select("-password");
-
-    res.status(200).json({ message: "Photo updated successfully", user: updatedUser });
-  } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
-  }
-};
-
+//     res.status(200).json({ message: "Photo updated successfully", user: updatedUser });
+//   } catch (error) {
+//     res.status(500).json({ message: "Server Error", error: error.message });
+//   }
+// };
 module.exports = {
   registerUser,
   loginUser,
@@ -154,5 +153,5 @@ module.exports = {
   adminDeleteUser,
   recruiterGetProfile,
   recruiterUpdateProfile,
-  uploadPhoto   
+     
 };
