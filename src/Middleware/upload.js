@@ -4,12 +4,14 @@ const path = require("path");
 // Storage config
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "uploads/"); // files saved in uploads folder
+        // Go one level up from /src/Middleware to /src
+        cb(null, path.resolve(__dirname, "../../uploads"));
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname));
     }
 });
+
 
 // Only allow images
 const fileFilter = (req, file, cb) => {

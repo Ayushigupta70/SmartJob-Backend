@@ -103,31 +103,36 @@ const recruiterGetProfile = async (req, res) => {
   }
 }
 // Recruiter – Update Profile
+const path = require("path");
+
 const recruiterUpdateProfile = async (req, res) => {
   try {
     const { fullName, phoneNumber, location, companyName, role } = req.body;
 
     const updateFields = { fullName, phoneNumber, location, companyName, role };
 
-    
-    if (req.file) {
-  console.log("Uploaded File:", req.file); // should show file info
-  updateFields.photo = req.file.path;
-} else {
-  console.log("No file uploaded");
+   if (req.file) {
+  updateFields.photo = `uploads/${req.file.filename}`;
 }
 
-    const updatedUser = await User.findByIdAndUpdate(
-      req.user.id,       
-      updateFields,      
-      { new: true }      
-    ).select("-password");
+const updatedUser = await User.findByIdAndUpdate(
+  req.user.id,
+  updateFields,
+  { new: true }
+).select("-password");
+
+if (updatedUser.photo) {
+  updatedUser.photo = `${req.protocol}://${req.get("host")}/${updatedUser.photo}`;
+}
+
 
     res.status(200).json(updatedUser);
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
+
+
 
 // const uploadPhoto = async (req, res) => {
 //   try {
