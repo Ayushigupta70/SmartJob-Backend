@@ -39,6 +39,7 @@ const registerUser = async (req, res) => {
 };
 
 // Login
+// Login
 const loginUser = async (req, res) => {
   try {
     if (!req.body) {
@@ -61,14 +62,38 @@ const loginUser = async (req, res) => {
       return res.status(403).json({ message: `Access denied for role: ${role}` });
     }
 
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || "secretkey", { expiresIn: "1h" });
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET || "secretkey",
+      { expiresIn: "1h" }
+    );
 
-    res.status(200).json({ user, message: "Login successful", token, role: user.role });
+    // ✅ full photo URL banaya
+    const photoUrl = user.photo
+      ? `${req.protocol}://${req.get("host")}/${user.photo}`
+      : null;
+
+    // ✅ sirf safe fields return karenge (password nahi)
+    res.status(200).json({
+      message: "Login successful",
+      token,
+      user: {
+        _id: user._id,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role,
+        companyName: user.companyName,
+        location: user.location,
+        phoneNumber: user.phoneNumber,
+        photo: photoUrl,
+      },
+    });
   } catch (error) {
-    console.log("Errpr",error.message);
+    console.log("Error:", error.message);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
+
 // Admin – Get All Users
 const adminGetAllUsers = async (req, res) => {
   try {
@@ -134,23 +159,23 @@ if (updatedUser.photo) {
 
 
 
-// const uploadPhoto = async (req, res) => {
-//   try {
-//     if (!req.file) {
-//       return res.status(400).json({ message: "No file uploaded" });
-//     }
+const uploadPhoto = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
 
-//     const updatedUser = await User.findByIdAndUpdate(
-//       req.user.id,   
-//       { photo: req.file.path },
-//       { new: true }
-//     ).select("-password");
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,   
+      { photo: req.file.path },
+      { new: true }
+    ).select("-password");
 
-//     res.status(200).json({ message: "Photo updated successfully", user: updatedUser });
-//   } catch (error) {
-//     res.status(500).json({ message: "Server Error", error: error.message });
-//   }
-// };
+    res.status(200).json({ message: "Photo updated successfully", user: updatedUser });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+};
 module.exports = {
   registerUser,
   loginUser,
@@ -158,5 +183,5 @@ module.exports = {
   adminDeleteUser,
   recruiterGetProfile,
   recruiterUpdateProfile,
-     
+  uploadPhoto 
 };
